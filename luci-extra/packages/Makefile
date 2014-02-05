@@ -35,7 +35,7 @@ define application
     SECTION:=luci
     CATEGORY:=LuCI
     TITLE:=LuCI - Lua Configuration Interface
-    URL:=http://luci.subsignal.org/
+    URL:=https://github.com/nanpuyue/openwrt-extra/
     MAINTAINER:=nanpuyue <nanpuyue@gmail.com>
     SUBMENU:=3. Applications
     TITLE:=$(if $(2),$(2),LuCI $(1) application)
