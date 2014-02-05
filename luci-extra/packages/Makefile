@@ -7,7 +7,7 @@ PKG_RELEASE:=1
 
 PKG_BUILD_PARALLEL:=0
 
-PKG_VERSION:=20140205
+PKG_VERSION:=$(shell $(LUCI_TOPDIR)/build/mkrevision.sh 2>/dev/null || echo unknow)
 
 PKG_BUILD_DEPENDS:=$(if $(STAGING_DIR_ROOT),lua/host)
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)
@@ -68,6 +68,12 @@ PKG_CONFIG_DEPENDS=$(patsubst %,CONFIG_PACKAGE_%,$(LUCI_BUILD_PACKAGES))
 include $(INCLUDE_DIR)/package.mk
 
 define Build/Prepare
+	@if [ ! -x $(LUCI_TOPDIR)/build/mkrevision.sh ]; then \
+		echo "*** Repository layout changed!" >&2; \
+		echo "*** Please change the LuCI url in feeds.conf to http://svn.luci.subsignal.org/luci/trunk and reinstall the feed with" >&2; \
+		echo "*** ./scripts/feeds update luci; ./scripts/feeds install -a -p luci" >&2; \
+		exit 1; \
+	fi
 	mkdir -p $(PKG_BUILD_DIR)
 	$(TAR) c -C $(LUCI_TOPDIR) . \
 		--exclude=.pc --exclude=.svn --exclude=.git \
