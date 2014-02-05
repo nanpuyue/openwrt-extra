@@ -1,0 +1,82 @@
+#!/bin/sh /etc/rc.common
+# Copyright (C) 2014 nanpuyue <nanpuyue@gmail.com>
+
+START=99
+
+append_params() {
+	local p; local v; local s="$1"; shift
+	for p in $*; do
+		config_get v "$s" "$p"
+		IFS=$(echo -e "\n")
+		for v in $v; do
+			[ -n "$v" ] && (
+				p=$(echo "$p" | sed -e 's|_|-|g'); \
+				echo "$p=$v" >> $config_file
+			)
+		done
+		unset IFS
+	done
+}
+
+section_enabled() {
+	config_get_bool enabled "$1" 'enabled' 0
+	[ $enabled -gt 0 ]
+}
+
+dht_enabled() {
+	config_get_bool enable_dht "$1" 'enable_dht' 0
+	[ $enable_dht -eq 0 ]
+}
+
+start_instance() {
+	local s="$1"
+	local user
+
+	section_enabled "$section" || return 1
+
+	config_get config_dir "$s" 'config_dir' '/var/etc/aria2'
+	config_get user "$s" 'user'
+
+	config_file="$config_dir/aria2.conf"
+	session_file="$config_dir/aria2.session"
+	[ -d "$config_dir" ] || {
+		mkdir -m 0755 -p "$config_dir"
+		touch "$config_file"
+		[ -z "$user" ] || chown -R $user $config_dir
+	}
+	[ -w "$session_file" ] || touch "$session_file"
+
+	echo -e "enable-rpc=true\nrpc-allow-origin-all=true\nrpc-listen-all=true\ndaemon=true" > $config_file
+	echo -e "continue=true\ninput-file=$session_file\nsave-session=$session_file" >> $config_file
+	dht_enabled "$section" || echo "dht-file-path=$config_dir/dht.dat" >> $config_file
+
+	append_params "$s" \
+		file_allocation bt_enable_lpd enable_dht rpc_user rpc_passwd rpc_listen_port dir bt_tracker disk_cache \
+		max_overall_download_limit max_overall_upload_limit max_download_limit max_upload_limit max_concurrent_downloads \
+		max_connection_per_server min_split_size split save_session_interval follow_torrent listen_port bt_max_peers
+
+	SERVICE_UID="$user" \
+	service_start /usr/bin/aria2c --conf-path="$config_file"
+}
+
+stop_instance() {
+	local s="$1"
+	local user
+
+	section_enabled "$section" || return 1
+
+	config_get user "$s" 'user'
+
+	SERVICE_UID="$user" \
+	service_stop /usr/bin/aria2c
+}
+
+start() {
+	config_load 'aria2'
+	config_foreach start_instance 'aria2'
+}
+
+stop() {
+	config_load 'aria2'
+	config_foreach stop_instance 'aria2'
+}
