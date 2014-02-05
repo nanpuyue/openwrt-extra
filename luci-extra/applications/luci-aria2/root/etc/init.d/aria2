@@ -23,11 +23,6 @@ section_enabled() {
 	[ $enabled -gt 0 ]
 }
 
-dht_enabled() {
-	config_get_bool enable_dht "$1" 'enable_dht' 0
-	[ $enable_dht -eq 0 ]
-}
-
 start_instance() {
 	local s="$1"
 	local user
@@ -39,16 +34,20 @@ start_instance() {
 
 	config_file="$config_dir/aria2.conf"
 	session_file="$config_dir/aria2.session"
+	dht_file="$config_dir/dht.dat"
 	[ -d "$config_dir" ] || {
 		mkdir -m 0755 -p "$config_dir"
 		touch "$config_file"
 		[ -z "$user" ] || chown -R $user $config_dir
 	}
-	[ -w "$session_file" ] || touch "$session_file"
+	touch "$session_file"
 
 	echo -e "enable-rpc=true\nrpc-allow-origin-all=true\nrpc-listen-all=true\ndaemon=true" > $config_file
 	echo -e "continue=true\ninput-file=$session_file\nsave-session=$session_file" >> $config_file
-	dht_enabled "$section" || echo "dht-file-path=$config_dir/dht.dat" >> $config_file
+	config_get_bool enable_dht "$1" 'enable_dht' 1
+	if [ $enable_dht -gt 0 ]; then
+		echo "dht-file-path=$dht_file" >> $config_file
+	fi
 
 	append_params "$s" \
 		file_allocation bt_enable_lpd enable_dht rpc_user rpc_passwd rpc_listen_port dir bt_tracker disk_cache \

@@ -88,8 +88,36 @@ listen_port.placeholder="6881-6999"
 bt_max_peers=bittorrent:option(Value, "bt_max_peers", translate("Max number of peers per torrent"))
 bt_max_peers.placeholder="55"
 bt_tracker_enable=bittorrent:option(Flag, "bt_tracker_enable", translate("Additional Bt tracker enabled"))
-bt_tracker=bittorrent:option(Value, "bt_tracker", translate("List of additional Bt tracker"), translate("Separated by \",\""))
+bt_tracker=bittorrent:option(DynamicList, "bt_tracker", translate("List of additional Bt tracker"))
 bt_tracker:depends("bt_tracker_enable", "1")
+bt_tracker.rmempty=true
+
+function bt_tracker.cfgvalue(self, section)
+	local rv = { }
+
+	local val = Value.cfgvalue(self, section)
+	if type(val) == "table" then
+		val = table.concat(val, ",")
+	elseif not val then
+		val = ""
+	end
+
+	local file
+	for file in val:gmatch("[^,%s]+") do
+		rv[#rv+1] = file
+	end
+
+	return rv
+end
+
+function bt_tracker.write(self, section, value)
+	local rv = { }
+	local file
+	for file in luci.util.imatch(value) do
+		rv[#rv+1] = file
+	end
+	Value.write(self, section, table.concat(rv, ","))
+end
 
 rpc=m:section(TypedSection, "aria2", translate("RPC settings"))
 rpc.anonymous=true

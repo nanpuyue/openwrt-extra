@@ -103,9 +103,6 @@ msgstr "添加额外的Tracker"
 msgid "List of additional Bt tracker"
 msgstr "附加Tracker列表"
 
-msgid "Separated by \",\""
-msgstr "以 \" , \" 分隔"
-
 msgid "RPC settings"
 msgstr "RPC设置"
 
