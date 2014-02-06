@@ -7,28 +7,30 @@ append_params() {
 	local p; local v; local s="$1"; shift
 	for p in $*; do
 		config_get v "$s" "$p"
-		IFS=$(echo -e "\n")
-		for v in $v; do
-			[ -n "$v" ] && (
-				p=$(echo "$p" | sed -e 's|_|-|g'); \
-				echo "$p=$v" >> $config_file
+		[ -n "$v" ] && (
+			p=$(echo "$p" | sed -e 's|_|-|g');
+			echo "$p=$v" >> $config_file
 			)
-		done
-		unset IFS
 	done
 }
 
 section_enabled() {
-	config_get_bool enabled "$1" 'enabled' 0
-	[ $enabled -gt 0 ]
+	local result
+	config_get_bool result "$1" 'enabled' 0
+	[ $result -eq 1 ]
+}
+
+option_disabled() {
+	local result
+	config_get_bool result "$1" "$2" 1
+	[ $result -eq 0 ]
 }
 
 start_instance() {
 	local s="$1"
 	local user
 
-	section_enabled "$section" || return 1
-
+	section_enabled "$s" || return 1
 	config_get config_dir "$s" 'config_dir' '/var/etc/aria2'
 	config_get user "$s" 'user'
 
@@ -44,10 +46,7 @@ start_instance() {
 
 	echo -e "enable-rpc=true\nrpc-allow-origin-all=true\nrpc-listen-all=true\ndaemon=true" > $config_file
 	echo -e "continue=true\ninput-file=$session_file\nsave-session=$session_file" >> $config_file
-	config_get_bool enable_dht "$1" 'enable_dht' 1
-	if [ $enable_dht -gt 0 ]; then
-		echo "dht-file-path=$dht_file" >> $config_file
-	fi
+	option_disabled "$s" 'enable_dht' || echo "dht-file-path=$dht_file" >> $config_file
 
 	append_params "$s" \
 		file_allocation bt_enable_lpd enable_dht rpc_user rpc_passwd rpc_listen_port dir bt_tracker disk_cache \
@@ -62,7 +61,7 @@ stop_instance() {
 	local s="$1"
 	local user
 
-	section_enabled "$section" || return 1
+	section_enabled "$s" || return 1
 
 	config_get user "$s" 'user'
 
