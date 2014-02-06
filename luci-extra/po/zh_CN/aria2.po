@@ -1,11 +1,11 @@
 msgid "Aria2 Settings"
-msgstr "Aria2 配置"
+msgstr "Aria2配置"
 
 msgid "Aria2 is a multi-protocol & multi-source download utility, here you can configure the settings."
-msgstr "Aria2 是一个支持多协议多线程的下载器,你可以在这里对其进行配置."
+msgstr "Aria2是一个支持多协议多线程的下载器,你可以在这里对其进行配置."
 
 msgid "Open Web Interface"
-msgstr "打开 Web 界面"
+msgstr "打开Web界面"
 
 msgid "Global settings"
 msgstr "全局设置"
@@ -32,7 +32,7 @@ msgid "Preallocation"
 msgstr "磁盘预分配"
 
 msgid "\"falloc\" is not available in all cases"
-msgstr "\"falloc\" 在并不是所有情况下都可用"
+msgstr "\"falloc\"并不是在所有情况下都可用"
 
 msgid "Task Settings"
 msgstr "任务设置"
