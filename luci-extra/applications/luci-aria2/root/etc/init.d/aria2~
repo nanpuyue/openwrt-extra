@@ -2,7 +2,6 @@
 # Copyright (C) 2014 nanpuyue <nanpuyue@gmail.com>
 
 START=99
-SERVICE_WRITE_PID=1
 
 append_params() {
 	local p; local v; local s="$1"; shift
@@ -32,7 +31,6 @@ start_instance() {
 	local user
 
 	section_enabled "$s" || return 1
-
 	config_get config_dir "$s" 'config_dir' '/var/etc/aria2'
 	config_get user "$s" 'user'
 
@@ -59,11 +57,24 @@ start_instance() {
 	service_start /usr/bin/aria2c --conf-path="$config_file"
 }
 
+stop_instance() {
+	local s="$1"
+	local user
+
+	section_enabled "$s" || return 1
+
+	config_get user "$s" 'user'
+
+	SERVICE_UID="$user" \
+	service_stop /usr/bin/aria2c
+}
+
 start() {
 	config_load 'aria2'
 	config_foreach start_instance 'aria2'
 }
 
 stop() {
-	service_stop /usr/bin/aria2c
+	config_load 'aria2'
+	config_foreach stop_instance 'aria2'
 }
