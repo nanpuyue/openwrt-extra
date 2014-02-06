@@ -3,6 +3,7 @@
 
 START=99
 SERVICE_WRITE_PID=1
+SERVICE_DAEMONIZE=1
 
 append_params() {
 	local p; local v; local s="$1"; shift
@@ -46,7 +47,7 @@ start_instance() {
 	}
 	touch "$session_file"
 
-	echo -e "enable-rpc=true\nrpc-allow-origin-all=true\nrpc-listen-all=true\ndaemon=true" > $config_file
+	echo -e "enable-rpc=true\nrpc-allow-origin-all=true\nrpc-listen-all=true\nquiet=true" > $config_file
 	echo -e "continue=true\ninput-file=$session_file\nsave-session=$session_file" >> $config_file
 	option_disabled "$s" 'enable_dht' || echo "dht-file-path=$dht_file" >> $config_file
 
