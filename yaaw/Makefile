@@ -27,6 +27,7 @@ define Package/yaaw
   TITLE:=Yet another aria2 web frontend
   URL:=https://github.com/binux/yaaw
   MAINTAINER:=binux <i@binux.me>
+  PKGARCH:=all
 endef
 
 define Package/yaaw/description

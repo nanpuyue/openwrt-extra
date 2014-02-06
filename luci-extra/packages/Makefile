@@ -37,6 +37,7 @@ define application
     TITLE:=LuCI - Lua Configuration Interface
     URL:=https://github.com/nanpuyue/openwrt-extra/
     MAINTAINER:=nanpuyue <nanpuyue@gmail.com>
+    PKGARCH:=all
     SUBMENU:=3. Applications
     TITLE:=$(if $(2),$(2),LuCI $(1) application)
 	DEPENDS:=$(3)
