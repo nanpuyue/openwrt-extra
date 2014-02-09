@@ -55,6 +55,17 @@ endef
 CONFIGURE_ARGS += \
 	--prefix=/usr
 
+TARGET_CFLAGS += \
+	-fdata-sections \
+	-ffunction-sections
+
+TARGET_LDFLAGS += \
+	-Wl,-gc-sections
+
+MAKE_FLAGS += \
+	CFLAGS="$(TARGET_CFLAGS)" \
+	LDFLAGS="$(TARGET_LDFLAGS)"
+
 define Package/dnscrypt-proxy/install
 	$(INSTALL_DIR) $(1)/usr/sbin
 	$(CP) $(PKG_INSTALL_DIR)/usr/sbin/dnscrypt-proxy $(1)/usr/sbin/
