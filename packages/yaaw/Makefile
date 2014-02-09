@@ -8,8 +8,9 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=yaaw
-PKG_VERSION:=20140129
-PKG_RELEASE=$(PKG_SOURCE_VERSION)
+PKG_VERSION:=2014-01-29
+PKG_RELEASE:=1
+PKG_MAINTAINER:=nanpuyue <nanpuyue@gmail.com>
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL:=git://github.com/binux/yaaw.git
@@ -26,7 +27,6 @@ define Package/yaaw
   DEPENDS:=+aria2
   TITLE:=Yet another aria2 web frontend
   URL:=https://github.com/binux/yaaw
-  MAINTAINER:=binux <i@binux.me>
   PKGARCH:=all
 endef
 
