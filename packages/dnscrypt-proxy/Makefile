@@ -66,14 +66,22 @@ MAKE_FLAGS += \
 	CFLAGS="$(TARGET_CFLAGS)" \
 	LDFLAGS="$(TARGET_LDFLAGS)"
 
+define Package/dnscrypt-proxy/conffiles
+/etc/config/dnscrypt-proxy
+endef
+
 define Package/dnscrypt-proxy/install
 	$(INSTALL_DIR) $(1)/usr/sbin
-	$(CP) $(PKG_INSTALL_DIR)/usr/sbin/dnscrypt-proxy $(1)/usr/sbin/
+	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/sbin/dnscrypt-proxy $(1)/usr/sbin/
+	$(INSTALL_DIR) $(1)/etc/config
+	$(INSTALL_DATA) files/config $(1)/etc/config/dnscrypt-proxy
+	$(INSTALL_DIR) $(1)/etc/init.d
+	$(INSTALL_BIN) files/init $(1)/etc/init.d/dnscrypt-proxy
 endef
 
 define Package/hostip/install
 	$(INSTALL_DIR) $(1)/usr/bin
-	$(CP) $(PKG_INSTALL_DIR)/usr/bin/hostip $(1)/usr/bin/
+	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/hostip $(1)/usr/bin/
 endef
 
 $(eval $(call BuildPackage,dnscrypt-proxy))
