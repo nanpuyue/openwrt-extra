@@ -18,7 +18,7 @@
 # loglevel		<level>
 #	don't log events with priority above this level after the  service
 #	has been started up. Default is the value for LOG_INFO.
-# max-active_requests	<count>
+# max_active_requests	<count>
 #	set the  maximum  number  of  simultaneous  active  requests.  The 
 #	default value is 250.
 # resolver_address	<ip>[:port]
@@ -36,3 +36,4 @@
 config dnscrypt-proxy
 	option enabled '1'
 	option local_address '127.0.0.1:5300'
+	option max_active_requests '64'
