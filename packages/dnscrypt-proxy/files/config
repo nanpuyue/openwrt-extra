@@ -7,7 +7,7 @@
 #	what local IP the daemon will listen to, with an optional port. 
 # edns_payload_size	<bytes>
 #	transparently add an OPT pseudo-RR to outgoing  queries  in  order
-#	to enable the EDNS0 extension mechanism. The payload  size  is the
+#	to enable the EDNS0 extension mechanism. The payload size  is  the
 #	size of the largest response we accept from  the  resolver  before
 #	retrying over TCP. This feature is enabled by default, with a pay-
 #	load size of 1252 bytes. Any value below 512 disables it.
