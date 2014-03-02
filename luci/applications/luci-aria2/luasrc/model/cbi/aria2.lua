@@ -102,9 +102,8 @@ function bt_tracker.cfgvalue(self, section)
 		val = ""
 	end
 
-	local file
-	for file in val:gmatch("[^,%s]+") do
-		rv[#rv+1] = file
+	for v in val:gmatch("[^,%s]+") do
+		rv[#rv+1] = v
 	end
 
 	return rv
@@ -112,9 +111,8 @@ end
 
 function bt_tracker.write(self, section, value)
 	local rv = { }
-	local file
-	for file in luci.util.imatch(value) do
-		rv[#rv+1] = file
+	for v in luci.util.imatch(value) do
+		rv[#rv+1] = v
 	end
 	Value.write(self, section, table.concat(rv, ","))
 end
