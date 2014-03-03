@@ -1,6 +1,6 @@
 
 config aria2
-	option enabled '1'
+	option enabled '0'
 	option file_allocation 'none'
 	option bt_enable_lpd 'true'
 	option enable_dht 'true'
