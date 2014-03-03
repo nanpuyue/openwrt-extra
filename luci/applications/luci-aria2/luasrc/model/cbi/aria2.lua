@@ -23,7 +23,7 @@ if running and webinstalled then
 	button = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type=\"button\" value=\" " .. translate("Open Web Interface") .. " \" onclick=\"window.open('http://'+window.location.hostname+'/" .. webui .. "')\"/>"
 end
 
-m = Map("aria2", translate("Aria2 Settings"), translate("Aria2 is a multi-protocol & multi-source download utility, here you can configure the settings.") .. button)
+m = Map("aria2", translate("Aria2 Settings"), translate("Aria2 is a multi-protocol &amp; multi-source download utility, here you can configure the settings.") .. button)
 
 s=m:section(TypedSection, "aria2", translate("Global settings"))
 s.addremove=false
