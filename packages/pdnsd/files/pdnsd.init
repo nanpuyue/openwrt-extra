@@ -1,0 +1,15 @@
+#!/bin/sh /etc/rc.common
+# Copyright (C) 2014 nanpuyue <nanpuyue@gmail.com>
+
+START=60
+SERVICE_WRITE_PID=1
+SERVICE_DAEMONIZE=1
+
+
+start() {
+	service_start /usr/sbin/pdnsd
+}
+
+stop() {
+	service_stop /usr/sbin/pdnsd
+}
