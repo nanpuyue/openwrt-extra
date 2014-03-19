@@ -42,7 +42,11 @@ define Package/pdnsd-ctl
 endef
 
 define Package/pdnsd/description
-	pdnsd is a proxy DNS server with permanent caching (the cache contents are written to hard disk on exit) that is designed to cope with unreachable or down DNS servers (for example in dial-in networking).
+	pdnsd is a IPv6 capable proxy domain name server (DNS) which saves the contents of its DNS cache to the disk on exit.
+endef
+
+define Package/pdnsd-ctl/description
+	pdnsd-ctl controls pdnsd, a proxy dns server with permanent caching. Note that the status control socket must be enabled (by specifying an option on the pdnsd command line or in the configuration file) before you can use pdnsd-ctl.
 endef
 
 CONFIGURE_ARGS += \
