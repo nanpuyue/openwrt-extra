@@ -14,7 +14,6 @@ the list of packages:
 * dnscrypt-proxy
 * libsodium (depended by dnscrypt-proxy, but have no ipk)
 * luci-app-aira2
-* pdnsd
 * shadowsocks-libev
 * webui-aria2
 * yaaw
