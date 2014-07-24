@@ -8,14 +8,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=libsodium
-PKG_VERSION:=0.4.5
+PKG_VERSION:=0.6.1
 PKG_RELEASE:=1
 
-PKG_SOURCE_PROTO:=git
-PKG_SOURCE_URL:=git://github.com/jedisct1/libsodium.git
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
-PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
-PKG_SOURCE_VERSION:=0.4.5
+PKG_SOURCE_URL:=https://download.libsodium.org/libsodium/releases/
+PKG_MD5SUM:=894da0e07a715dd8e44f8b3486093e70
 
 PKG_MAINTAINER:=nanpuyue <nanpuyue@gmail.com>
 
