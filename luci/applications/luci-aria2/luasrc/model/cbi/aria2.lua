@@ -20,7 +20,7 @@ local running = (luci.sys.call("pidof aria2c > /dev/null") == 0)
 local webinstalled = luci.model.ipkg.installed(webui) 
 local button = ""
 if running and webinstalled then
-	button = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type=\"button\" value=\" " .. translate("Open Web Interface") .. " \" onclick=\"window.open('http://'+window.location.hostname+'/" .. webui .. "')\"/>"
+	button = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type=\"button\" value=\" " .. translate("Open Web Interface") .. " \" onclick=\"window.open('/" .. webui .. "')\"/>"
 end
 
 m = Map("aria2", translate("Aria2 Settings"), translate("Aria2 is a multi-protocol &amp; multi-source download utility, here you can configure the settings.") .. button)
