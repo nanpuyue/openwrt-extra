@@ -123,3 +123,9 @@ msgstr "用户代理(UA)"
 
 msgid "Prefix of peer ID"
 msgstr "peer ID前缀"
+
+"Extra Settings"
+"附加选项"
+
+"List of extra settings"
+"附加选项列表"

@@ -57,9 +57,15 @@ start_instance() {
 		max_overall_download_limit max_overall_upload_limit max_download_limit max_upload_limit max_concurrent_downloads \
 		max_connection_per_server min_split_size split save_session_interval follow_torrent listen_port bt_max_peers \
 		peer_id_prefix user_agent
-
+	
+	config_list_foreach "$s" extra_settings append_extrasettings
+	
 	SERVICE_UID="$user" \
 	service_start /usr/bin/aria2c --conf-path="$config_file"
+}
+
+append_extrasettings() {
+	echo "$1" >> $config_file
 }
 
 start() {
