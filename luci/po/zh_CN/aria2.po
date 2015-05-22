@@ -117,3 +117,9 @@ msgstr "RPC用户名"
 
 msgid "RPC password"
 msgstr "RPC密码"
+
+msgid "User agent value"
+msgstr "用户代理(UA)"
+
+msgid "Prefix of peer ID"
+msgstr "peer ID前缀"

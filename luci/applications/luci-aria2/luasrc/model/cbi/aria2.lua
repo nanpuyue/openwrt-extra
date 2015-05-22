@@ -71,6 +71,8 @@ split=task:option(Value, "split", translate("Max number of split"))
 split.placeholder="5"
 save_session_interval=task:option(Value, "save_session_interval", translate("Autosave session interval"), translate("Sec"))
 save_session_interval.default="30"
+user_agent=task:option(Value, "user_agent", translate("User agent value"))
+user_agent.placeholder="aria2/1.18.7"
 
 bittorrent=m:section(TypedSection, "aria2", translate("BitTorrent Settings"))
 bittorrent.anonymous=true
@@ -91,6 +93,8 @@ bt_tracker_enable=bittorrent:option(Flag, "bt_tracker_enable", translate("Additi
 bt_tracker=bittorrent:option(DynamicList, "bt_tracker", translate("List of additional Bt tracker"))
 bt_tracker:depends("bt_tracker_enable", "1")
 bt_tracker.rmempty=true
+peer_id_prefix=bittorrent:option(Value, "peer_id_prefix", translate("Prefix of peer ID"))
+peer_id_prefix.placeholder="A2-1-18-7-"
 
 function bt_tracker.cfgvalue(self, section)
 	local rv = { }

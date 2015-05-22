@@ -5,6 +5,7 @@ START=99
 SERVICE_WRITE_PID=1
 SERVICE_DAEMONIZE=1
 
+
 append_params() {
 	local p; local v; local s="$1"; shift
 	for p in $*; do
@@ -54,7 +55,8 @@ start_instance() {
 	append_params "$s" \
 		file_allocation bt_enable_lpd enable_dht rpc_user rpc_passwd rpc_listen_port dir bt_tracker disk_cache \
 		max_overall_download_limit max_overall_upload_limit max_download_limit max_upload_limit max_concurrent_downloads \
-		max_connection_per_server min_split_size split save_session_interval follow_torrent listen_port bt_max_peers
+		max_connection_per_server min_split_size split save_session_interval follow_torrent listen_port bt_max_peers \
+		peer_id_prefix user_agent
 
 	SERVICE_UID="$user" \
 	service_start /usr/bin/aria2c --conf-path="$config_file"
