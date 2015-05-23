@@ -133,4 +133,13 @@ rpc_passwd=rpc:option(Value, "rpc_passwd", translate("RPC password"))
 rpc_passwd:depends("rpc_auth_required", "1")
 rpc_passwd.password = true
 
+extra=m:section(TypedSection, "aria2", translate("Extra Settings"))
+extra.addremove=false
+extra.anonymous=true
+extra_settings=extra:option(DynamicList, "extra_settings", translate("List of extra settings"))
+extra_settings.placeholder="option=value"
+extra_settings.rmempty=true
+
+
+
 return m
