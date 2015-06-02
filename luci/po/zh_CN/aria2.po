@@ -129,3 +129,6 @@ msgstr "附加选项"
 
 msgid "List of extra settings"
 msgstr "附加选项列表"
+
+msgid "View Json-RPC URL"
+msgstr "查看 Json-RPC URL"

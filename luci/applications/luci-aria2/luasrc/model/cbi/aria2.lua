@@ -14,6 +14,12 @@ require("luci.sys")
 require("luci.util")
 require("luci.model.ipkg")
 
+--view jsonrpc
+local session = string.gsub(luci.sys.exec("cat /tmp/luci-sessions/* | md5sum | grep -oP \"[a-z0-9]*\""), "\n", "")
+local viewrpc = "cgi-bin/aria2rpcpath?" .. session
+local sessionbtn = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type=\"button\" value=\" " .. translate("View Json-RPC URL") .. " \" onclick=\"window.open('/" .. viewrpc .. "')\"/>"
+
+
 local webui="yaaw"
 local uci = require "luci.model.uci".cursor()
 local running = (luci.sys.call("pidof aria2c > /dev/null") == 0)
@@ -23,7 +29,7 @@ if running and webinstalled then
 	button = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type=\"button\" value=\" " .. translate("Open Web Interface") .. " \" onclick=\"window.open('/" .. webui .. "')\"/>"
 end
 
-m = Map("aria2", translate("Aria2 Settings"), translate("Aria2 is a multi-protocol &amp; multi-source download utility, here you can configure the settings.") .. button)
+m = Map("aria2", translate("Aria2 Settings"), translate("Aria2 is a multi-protocol &amp; multi-source download utility, here you can configure the settings.") .. button .. sessionbtn)
 
 s=m:section(TypedSection, "aria2", translate("Global settings"))
 s.addremove=false

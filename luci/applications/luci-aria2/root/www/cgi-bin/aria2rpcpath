@@ -1,0 +1,14 @@
+#!/bin/sh
+echo "Content-Type:text/plain"
+echo ""
+cd /tmp/luci-sessions
+if [ $QUERY_STRING = `cat /tmp/luci-sessions/* | md5sum | grep -oP "[a-z0-9]*"` ] ; then
+
+echo http://\
+`uci get aria2.@aria2[0].rpc_user`\
+`uci get aria2.@aria2[0].rpc_auth_required 2&>1 >/dev/null && echo :`\
+`uci get aria2.@aria2[0].rpc_passwd`\
+`uci get aria2.@aria2[0].rpc_auth_required 2&>1 >/dev/null && echo @`\
+`uci get network.lan.ipaddr`:`uci get aria2.@aria2[0].rpc_listen_port 2>/dev/null || echo 6800`/jsonrpc
+
+fi
