@@ -109,9 +109,6 @@ msgstr "RPC设置"
 msgid "RPC port"
 msgstr "RPC端口"
 
-msgid "RPC authentication required"
-msgstr "启用RPC认证"
-
 msgid "RPC username"
 msgstr "RPC用户名"
 
@@ -132,3 +129,19 @@ msgstr "附加选项列表"
 
 msgid "View Json-RPC URL"
 msgstr "查看 Json-RPC URL"
+
+msgid "RPC authentication method"
+msgstr "RPC认证方式"
+
+msgid "No Authentication"
+msgstr "无认证"
+
+msgid "Username & Password"
+msgstr "用户名与密码"
+
+msgid "Token"
+msgstr "令牌"
+
+msgid "RPC Token"
+msgstr "RPC令牌"
+
