@@ -15,10 +15,27 @@ require("luci.util")
 require("luci.model.ipkg")
 
 --view jsonrpc
-local session = string.gsub(luci.sys.exec("(date|cut -c12-15;cat /tmp/luci-sessions/*)|md5sum|grep -oP \"[a-z0-9]*\""), "\n", "")
-local viewrpc = "cgi-bin/aria2rpcpath?" .. session
-local sessionbtn = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type=\"button\" value=\" " .. translate("View Json-RPC URL") .. " \" onclick=\"window.open('/" .. viewrpc .. "')\"/>"
+local session = string.gsub(luci.sys.exec("(date|cut -c12-15;ls /tmp/luci-sessions/)|md5sum|grep -oP \"[a-z0-9]*\""), "\n", "")
+local viewrpc = "if(\"XMLHttpRequest\" in window){" ..
+"xmlhttp=new XMLHttpRequest();}" ..
+"if(\"ActiveXObject\" in window){" ..
+"xmlhttp=new ActiveXObject(\"Msxml2.XMLHTTP\");}" ..
+"xmlhttp.open(\"GET\", \"/cgi-bin/aria2rpcpath?" ..
+session ..
+"\",true);" ..
+"xmlhttp.onreadystatechange=function(){" ..
+"if(xmlhttp.readyState==4){" ..
+"if(xmlhttp.responseText==\"\"){" ..
+"location.href=location.href;" ..
+"}else{" ..
+"var newTextNode=document.getElementById(\"aria2rpcpath\");" ..
+"newTextNode.value=xmlhttp.responseText;" ..
+"var TitleNode=document.getElementsByClassName(\"cbi-map-descr\");" ..
+"TitleNode[0].appendChild(newTextNode);}}};" ..
+"xmlhttp.send(null);void(0);"
 
+local sessionbtn = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type=\"button\" value=\" " .. translate("View Json-RPC URL") .. " \" onclick='" .. viewrpc .. "'/>"
+local aria2rpctxt = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input id=\"aria2rpcpath\" onmouseover=\"obj=document.getElementById(this.id);obj.focus();obj.select()\"></input>"
 
 local webui="yaaw"
 local uci = require "luci.model.uci".cursor()
@@ -29,7 +46,7 @@ if running and webinstalled then
 	button = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type=\"button\" value=\" " .. translate("Open Web Interface") .. " \" onclick=\"window.open('/" .. webui .. "')\"/>"
 end
 
-m = Map("aria2", translate("Aria2 Settings"), translate("Aria2 is a multi-protocol &amp; multi-source download utility, here you can configure the settings.") .. button .. sessionbtn)
+m = Map("aria2", translate("Aria2 Settings"), translate("Aria2 is a multi-protocol &amp; multi-source download utility, here you can configure the settings.") .. button .. sessionbtn .. aria2rpctxt)
 
 s=m:section(TypedSection, "aria2", translate("Global settings"))
 s.addremove=false
@@ -132,12 +149,24 @@ rpc.anonymous=true
 rpc_listen_port=rpc:option(Value, "rpc_listen_port", translate("RPC port"))
 rpc_listen_port.datatype="port"
 rpc_listen_port.placeholder="6800"
-rpc_auth_required=rpc:option(Flag, "rpc_auth_required", translate("RPC authentication required"))
+
+--rpc_auth_required=rpc:option(Flag, "rpc_auth_required", translate("RPC authentication required"))
+rpc_auth_method=rpc:option(Value, "rpc_auth_method", translate("RPC authentication method"))
+rpc_auth_method:value("none", translate("No Authentication"))
+rpc_auth_method:value("user_pass", translate("Username & Password"))
+rpc_auth_method:value("token", translate("Token"))
+
 rpc_user=rpc:option(Value, "rpc_user", translate("RPC username"))
-rpc_user:depends("rpc_auth_required", "1")
+--rpc_user:depends("rpc_auth_required", "1")
+rpc_user:depends("rpc_auth_method", "user_pass")
+
 rpc_passwd=rpc:option(Value, "rpc_passwd", translate("RPC password"))
-rpc_passwd:depends("rpc_auth_required", "1")
+--rpc_passwd:depends("rpc_auth_required", "1")
+rpc_passwd:depends("rpc_auth_method", "user_pass")
 rpc_passwd.password = true
+
+rpc_secret=rpc:option(Value, "rpc_secret", translate("RPC Token"))
+rpc_secret:depends("rpc_auth_method", "token")
 
 extra=m:section(TypedSection, "aria2", translate("Extra Settings"))
 extra.addremove=false
