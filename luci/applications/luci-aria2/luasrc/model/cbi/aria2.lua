@@ -42,8 +42,15 @@ local uci = require "luci.model.uci".cursor()
 local running = (luci.sys.call("pidof aria2c > /dev/null") == 0)
 local webinstalled = luci.model.ipkg.installed(webui) 
 local button = ""
+local openyaaw = "var curWwwPath=window.document.location.href;" ..
+"var pathName=window.document.location.pathname;" ..
+"var pos=curWwwPath.indexOf(pathName);" ..
+"var localhostPath=curWwwPath.substring(0, pos);" ..
+"var yaawpath=\"http:\"+localhostPath.substring(window.location.protocol.length)+\"/yaaw\";" ..
+"window.open(yaawpath)"
+
 if running and webinstalled then
-	button = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type=\"button\" value=\" " .. translate("Open Web Interface") .. " \" onclick=\"window.open('/" .. webui .. "')\"/>"
+	button = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type=\"button\" value=\" " .. translate("Open Web Interface") .. " \" onclick=\'" .. openyaaw .. "\'/>"
 end
 
 m = Map("aria2", translate("Aria2 Settings"), translate("Aria2 is a multi-protocol &amp; multi-source download utility, here you can configure the settings.") .. button .. sessionbtn .. aria2rpctxt)
