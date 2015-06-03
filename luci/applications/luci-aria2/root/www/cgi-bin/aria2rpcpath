@@ -2,7 +2,7 @@
 echo "Content-Type:text/plain"
 echo ""
 cd /tmp/luci-sessions
-if [ $QUERY_STRING = `cat /tmp/luci-sessions/* | md5sum | grep -oP "[a-z0-9]*"` ] ; then
+if [ $QUERY_STRING = `(date|cut -c12-15;cat /tmp/luci-sessions/*)|md5sum|grep -oP "[a-z0-9]*"` ] ; then
 
 echo http://\
 `uci get aria2.@aria2[0].rpc_user`\

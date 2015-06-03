@@ -15,7 +15,7 @@ require("luci.util")
 require("luci.model.ipkg")
 
 --view jsonrpc
-local session = string.gsub(luci.sys.exec("cat /tmp/luci-sessions/* | md5sum | grep -oP \"[a-z0-9]*\""), "\n", "")
+local session = string.gsub(luci.sys.exec("(date|cut -c12-15;cat /tmp/luci-sessions/*)|md5sum|grep -oP \"[a-z0-9]*\""), "\n", "")
 local viewrpc = "cgi-bin/aria2rpcpath?" .. session
 local sessionbtn = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type=\"button\" value=\" " .. translate("View Json-RPC URL") .. " \" onclick=\"window.open('/" .. viewrpc .. "')\"/>"
 
