@@ -27,6 +27,7 @@ define Package/dnscrypt-proxy/default
   CATEGORY:=Network
   SUBMENU:=IP Addresses and Names
   URL:=http://dnscrypt.org/
+  DEPENDS:=+libsodium
   MAINTAINER:=nanpuyue <nanpuyue@gmail.com>
 endef
 
