@@ -2,6 +2,7 @@
 LuCI - Lua Configuration Interface - Aria2 support
 
 Copyright 2014 nanpuyue <nanpuyue@gmail.com>
+Modified by maz-1 <ohmygod19993@gmail.com>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -14,28 +15,31 @@ require("luci.sys")
 require("luci.util")
 require("luci.model.ipkg")
 
---view jsonrpc
-local session = string.gsub(luci.sys.exec("(date|cut -c12-15;ls /tmp/luci-sessions/)|md5sum|grep -oP \"[a-z0-9]*\""), "\n", "")
-local viewrpc = "if(\"XMLHttpRequest\" in window){" ..
-"xmlhttp=new XMLHttpRequest();}" ..
-"if(\"ActiveXObject\" in window){" ..
-"xmlhttp=new ActiveXObject(\"Msxml2.XMLHTTP\");}" ..
-"xmlhttp.open(\"GET\", \"/cgi-bin/aria2rpcpath?" ..
-session ..
-"\",true);" ..
-"xmlhttp.onreadystatechange=function(){" ..
-"if(xmlhttp.readyState==4){" ..
-"if(xmlhttp.responseText==\"\"){" ..
-"location.href=location.href;" ..
-"}else{" ..
-"var newTextNode=document.getElementById(\"aria2rpcpath\");" ..
-"newTextNode.value=xmlhttp.responseText;" ..
-"var TitleNode=document.getElementsByClassName(\"cbi-map-descr\");" ..
-"TitleNode[0].appendChild(newTextNode);}}};" ..
-"xmlhttp.send(null);void(0);"
+local cfgnum = string.gsub(luci.sys.exec('uci show aria2.@aria2[0]|grep -m 1 -oP "cfg\\d+"'), "\n", "")
+local routerip = string.gsub(luci.sys.exec('uci get network.lan.ipaddr'), "\n", "")
+local cfgcmd = "var Token=document.getElementById(\"cbid.aria2." .. cfgnum .. ".rpc_secret\");function randomString(len){len=len||32;var $chars=\"abcdefghijklmnopqrstuvwxyz1234567890\";var maxPos=$chars.length;var pwd=\"\";for(i = 0; i < len; i++){pwd+=$chars.charAt(Math.floor(Math.random() * maxPos));}return pwd;};Token.value=randomString(32)"
+local cfgbtn = "&nbsp;<input type=\"button\" value=\" " .. translate("Generate Randomly") .. " \" onclick='" .. cfgcmd .. "'/>"
 
+local viewrpc = "var websocket=document.getElementById(\"use_websocket\");" ..
+"var protocol=(websocket.checked) ? \"ws\" : \"http\";" ..
+"var newTextNode=document.getElementById(\"aria2rpcpath\");" ..
+"var auth_method=document.getElementById(\"cbid.aria2." .. cfgnum .. ".rpc_auth_method\");" ..
+"var auth_port=document.getElementById(\"cbid.aria2." .. cfgnum .. ".rpc_listen_port\");" ..
+"if(auth_port.value==\"\"){auth_port_value=\"6800\"}else{auth_port_value=auth_port.value};" ..
+"if(auth_method.value==\"token\"){" ..
+"var auth_token=document.getElementById(\"cbid.aria2." .. cfgnum .. ".rpc_secret\");" ..
+"newTextNode.value=protocol+\"://token:\"+auth_token.value+\"@\"+\"" .. routerip .. ":\"+auth_port_value+\"/jsonrpc\";" ..
+"}else if(auth_method.value==\"user_pass\"){" ..
+"var auth_user=document.getElementById(\"cbid.aria2." .. cfgnum .. ".rpc_user\");" ..
+"var auth_passwd=document.getElementById(\"cbid.aria2." .. cfgnum .. ".rpc_passwd\");" ..
+"newTextNode.value=protocol+\"://\"+auth_user.value+\":\"+auth_passwd.value+\"@\"+\"" .. routerip .. ":\"+auth_port_value+\"/jsonrpc\";" ..
+"}else{" ..
+"newTextNode.value=protocol+\"://\"+\"" .. routerip .. ":\"+auth_port_value+\"/jsonrpc\";" ..
+"}"
 local sessionbtn = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type=\"button\" value=\" " .. translate("View Json-RPC URL") .. " \" onclick='" .. viewrpc .. "'/>"
 local aria2rpctxt = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input id=\"aria2rpcpath\" onmouseover=\"obj=document.getElementById(this.id);obj.focus();obj.select()\"></input>"
+local use_websocket = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input id=\"use_websocket\" type=\"checkbox\"></input>&nbsp;&nbsp;<label for=\"use_websocket\">" .. translate("Use WebSocket") .. "</label>"
+
 
 local webui="yaaw"
 local uci = require "luci.model.uci".cursor()
@@ -53,7 +57,7 @@ if running and webinstalled then
 	button = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type=\"button\" value=\" " .. translate("Open Web Interface") .. " \" onclick=\'" .. openyaaw .. "\'/>"
 end
 
-m = Map("aria2", translate("Aria2 Settings"), translate("Aria2 is a multi-protocol &amp; multi-source download utility, here you can configure the settings.") .. button .. sessionbtn .. aria2rpctxt)
+m = Map("aria2", translate("Aria2 Settings"), translate("Aria2 is a multi-protocol &amp; multi-source download utility, here you can configure the settings.") .. button)
 
 s=m:section(TypedSection, "aria2", translate("Global settings"))
 s.addremove=false
@@ -151,28 +155,25 @@ function bt_tracker.write(self, section, value)
 	Value.write(self, section, table.concat(rv, ","))
 end
 
-rpc=m:section(TypedSection, "aria2", translate("RPC settings"))
+rpc=m:section(TypedSection, "aria2", translate("RPC settings") .. sessionbtn .. use_websocket .. aria2rpctxt)
 rpc.anonymous=true
 rpc_listen_port=rpc:option(Value, "rpc_listen_port", translate("RPC port"))
 rpc_listen_port.datatype="port"
 rpc_listen_port.placeholder="6800"
 
---rpc_auth_required=rpc:option(Flag, "rpc_auth_required", translate("RPC authentication required"))
 rpc_auth_method=rpc:option(Value, "rpc_auth_method", translate("RPC authentication method"))
 rpc_auth_method:value("none", translate("No Authentication"))
 rpc_auth_method:value("user_pass", translate("Username & Password"))
 rpc_auth_method:value("token", translate("Token"))
 
 rpc_user=rpc:option(Value, "rpc_user", translate("RPC username"))
---rpc_user:depends("rpc_auth_required", "1")
 rpc_user:depends("rpc_auth_method", "user_pass")
 
 rpc_passwd=rpc:option(Value, "rpc_passwd", translate("RPC password"))
---rpc_passwd:depends("rpc_auth_required", "1")
 rpc_passwd:depends("rpc_auth_method", "user_pass")
 rpc_passwd.password = true
 
-rpc_secret=rpc:option(Value, "rpc_secret", translate("RPC Token"))
+rpc_secret=rpc:option(Value, "rpc_secret", translate("RPC Token"), "<br>" .. cfgbtn)
 rpc_secret:depends("rpc_auth_method", "token")
 
 extra=m:section(TypedSection, "aria2", translate("Extra Settings"))
