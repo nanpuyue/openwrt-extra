@@ -161,7 +161,7 @@ rpc_listen_port=rpc:option(Value, "rpc_listen_port", translate("RPC port"))
 rpc_listen_port.datatype="port"
 rpc_listen_port.placeholder="6800"
 
-rpc_auth_method=rpc:option(Value, "rpc_auth_method", translate("RPC authentication method"))
+rpc_auth_method=rpc:option(ListValue, "rpc_auth_method", translate("RPC authentication method"))
 rpc_auth_method:value("none", translate("No Authentication"))
 rpc_auth_method:value("user_pass", translate("Username & Password"))
 rpc_auth_method:value("token", translate("Token"))
