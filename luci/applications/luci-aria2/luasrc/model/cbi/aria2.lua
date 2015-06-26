@@ -15,34 +15,34 @@ require("luci.sys")
 require("luci.util")
 require("luci.model.ipkg")
 
-local cfgnum = string.gsub(luci.sys.exec('uci show aria2.@aria2[0]|grep -m 1 -oP "cfg\\d+"'), "\n", "")
-local routerip = string.gsub(luci.sys.exec('uci get network.lan.ipaddr'), "\n", "")
-local cfgcmd = "var Token=document.getElementById(\"cbid.aria2." .. cfgnum .. ".rpc_secret\");function randomString(len){len=len||32;var $chars=\"abcdefghijklmnopqrstuvwxyz1234567890\";var maxPos=$chars.length;var pwd=\"\";for(i = 0; i < len; i++){pwd+=$chars.charAt(Math.floor(Math.random() * maxPos));}return pwd;};Token.value=randomString(32)"
+local uci = require "luci.model.uci".cursor()
+local routerip = uci:get ("network",  "lan",  "ipaddr")
+local cfgcmd = "var Token=document.getElementById(\"cbid.aria2.main.rpc_secret\");function randomString(len){len=len||32;var $chars=\"abcdefghijklmnopqrstuvwxyz1234567890\";var maxPos=$chars.length;var pwd=\"\";for(i = 0; i < len; i++){pwd+=$chars.charAt(Math.floor(Math.random() * maxPos));}return pwd;};Token.value=randomString(32)"
 local cfgbtn = "&nbsp;<input type=\"button\" value=\" " .. translate("Generate Randomly") .. " \" onclick='" .. cfgcmd .. "'/>"
+local spaces="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
 
 local viewrpc = "var websocket=document.getElementById(\"use_websocket\");" ..
 "var protocol=(websocket.checked) ? \"ws\" : \"http\";" ..
 "var newTextNode=document.getElementById(\"aria2rpcpath\");" ..
-"var auth_method=document.getElementById(\"cbid.aria2." .. cfgnum .. ".rpc_auth_method\");" ..
-"var auth_port=document.getElementById(\"cbid.aria2." .. cfgnum .. ".rpc_listen_port\");" ..
+"var auth_method=document.getElementById(\"cbid.aria2.main.rpc_auth_method\");" ..
+"var auth_port=document.getElementById(\"cbid.aria2.main.rpc_listen_port\");" ..
 "if(auth_port.value==\"\"){auth_port_value=\"6800\"}else{auth_port_value=auth_port.value};" ..
 "if(auth_method.value==\"token\"){" ..
-"var auth_token=document.getElementById(\"cbid.aria2." .. cfgnum .. ".rpc_secret\");" ..
+"var auth_token=document.getElementById(\"cbid.aria2.main.rpc_secret\");" ..
 "newTextNode.value=protocol+\"://token:\"+auth_token.value+\"@\"+\"" .. routerip .. ":\"+auth_port_value+\"/jsonrpc\";" ..
 "}else if(auth_method.value==\"user_pass\"){" ..
-"var auth_user=document.getElementById(\"cbid.aria2." .. cfgnum .. ".rpc_user\");" ..
-"var auth_passwd=document.getElementById(\"cbid.aria2." .. cfgnum .. ".rpc_passwd\");" ..
+"var auth_user=document.getElementById(\"cbid.aria2.main.rpc_user\");" ..
+"var auth_passwd=document.getElementById(\"cbid.aria2.main.rpc_passwd\");" ..
 "newTextNode.value=protocol+\"://\"+auth_user.value+\":\"+auth_passwd.value+\"@\"+\"" .. routerip .. ":\"+auth_port_value+\"/jsonrpc\";" ..
 "}else{" ..
 "newTextNode.value=protocol+\"://\"+\"" .. routerip .. ":\"+auth_port_value+\"/jsonrpc\";" ..
 "}"
-local sessionbtn = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type=\"button\" value=\" " .. translate("View Json-RPC URL") .. " \" onclick='" .. viewrpc .. "'/>"
-local aria2rpctxt = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input id=\"aria2rpcpath\" onmouseover=\"obj=document.getElementById(this.id);obj.focus();obj.select()\"></input>"
-local use_websocket = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input id=\"use_websocket\" type=\"checkbox\"></input>&nbsp;&nbsp;<label for=\"use_websocket\">" .. translate("Use WebSocket") .. "</label>"
+local sessionbtn = spaces .. "<input type=\"button\" value=\" " .. translate("View Json-RPC URL") .. " \" onclick='" .. viewrpc .. "'/>"
+local aria2rpctxt = spaces .. "<input id=\"aria2rpcpath\" onmouseover=\"obj=document.getElementById(this.id);obj.focus();obj.select()\"></input>"
+local use_websocket = spaces .. "<input id=\"use_websocket\" type=\"checkbox\"></input>&nbsp;&nbsp;<label for=\"use_websocket\">" .. translate("Use WebSocket") .. "</label>"
 
 
 local webui="yaaw"
-local uci = require "luci.model.uci".cursor()
 local running = (luci.sys.call("pidof aria2c > /dev/null") == 0)
 local webinstalled = luci.model.ipkg.installed(webui) 
 local button = ""
@@ -54,12 +54,12 @@ local openyaaw = "var curWwwPath=window.document.location.href;" ..
 "window.open(yaawpath)"
 
 if running and webinstalled then
-	button = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type=\"button\" value=\" " .. translate("Open Web Interface") .. " \" onclick=\'" .. openyaaw .. "\'/>"
+	button = spaces .. "<input type=\"button\" value=\" " .. translate("Open Web Interface") .. " \" onclick=\'" .. openyaaw .. "\'/>"
 end
 
 m = Map("aria2", translate("Aria2 Settings"), translate("Aria2 is a multi-protocol &amp; multi-source download utility, here you can configure the settings.") .. button)
 
-s=m:section(TypedSection, "aria2", translate("Global settings"))
+s=m:section(NamedSection, "main", "aria2", translate("Global settings"))
 s.addremove=false
 s.anonymous=true
 enable=s:option(Flag, "enabled", translate("Enabled"))
