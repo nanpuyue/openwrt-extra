@@ -15,6 +15,7 @@ require("luci.sys")
 require("luci.util")
 require("luci.model.ipkg")
 
+
 local uci = require "luci.model.uci".cursor()
 local routerip = uci:get ("network",  "lan",  "ipaddr")
 local cfgcmd = "var Token=document.getElementById(\"cbid.aria2.main.rpc_secret\");function randomString(len){len=len||32;var $chars=\"abcdefghijklmnopqrstuvwxyz1234567890\";var maxPos=$chars.length;var pwd=\"\";for(i = 0; i < len; i++){pwd+=$chars.charAt(Math.floor(Math.random() * maxPos));}return pwd;};Token.value=randomString(32)"
@@ -55,6 +56,26 @@ local openyaaw = "var curWwwPath=window.document.location.href;" ..
 
 if running and webinstalled then
 	button = spaces .. "<input type=\"button\" value=\" " .. translate("Open Web Interface") .. " \" onclick=\'" .. openyaaw .. "\'/>"
+end
+
+function ipkg_ver(pkg)
+	local version = nil
+	local control = io.open("/usr/lib/opkg/info/%s.control" % pkg, "r")
+	if control then
+		local ln
+		repeat
+			ln = control:read("*l")
+			if ln and ln:match("^Version: ") then
+				version = ln:gsub("^Version: ", ""):gsub("-%d", "")
+				break
+			end
+		until not ln
+		control:close()
+	end
+	return version
+end
+function ipkg_ver_lined(pkg)
+	return ipkg_ver(pkg):gsub("%.", "-")
 end
 
 m = Map("aria2", translate("Aria2 Settings"), translate("Aria2 is a multi-protocol &amp; multi-source download utility, here you can configure the settings.") .. button)
@@ -106,7 +127,7 @@ split.placeholder="5"
 save_session_interval=task:option(Value, "save_session_interval", translate("Autosave session interval"), translate("Sec"))
 save_session_interval.default="30"
 user_agent=task:option(Value, "user_agent", translate("User agent value"))
-user_agent.placeholder="aria2/1.18.7"
+user_agent.placeholder="aria2/" .. ipkg_ver("aria2")
 
 bittorrent=m:section(TypedSection, "aria2", translate("BitTorrent Settings"))
 bittorrent.anonymous=true
@@ -128,7 +149,7 @@ bt_tracker=bittorrent:option(DynamicList, "bt_tracker", translate("List of addit
 bt_tracker:depends("bt_tracker_enable", "1")
 bt_tracker.rmempty=true
 peer_id_prefix=bittorrent:option(Value, "peer_id_prefix", translate("Prefix of peer ID"))
-peer_id_prefix.placeholder="A2-1-18-7-"
+peer_id_prefix.placeholder="A2-" .. ipkg_ver_lined("aria2") .. "-"
 
 function bt_tracker.cfgvalue(self, section)
 	local rv = { }
