@@ -17,7 +17,6 @@ require("luci.model.ipkg")
 
 
 local uci = require "luci.model.uci".cursor()
-local routerip = uci:get ("network",  "lan",  "ipaddr")
 local cfgcmd = "var Token=document.getElementById(\"cbid.aria2.main.rpc_secret\");function randomString(len){len=len||32;var $chars=\"abcdefghijklmnopqrstuvwxyz1234567890\";var maxPos=$chars.length;var pwd=\"\";for(i = 0; i < len; i++){pwd+=$chars.charAt(Math.floor(Math.random() * maxPos));}return pwd;};Token.value=randomString(32)"
 local cfgbtn = "&nbsp;<input type=\"button\" value=\" " .. translate("Generate Randomly") .. " \" onclick='" .. cfgcmd .. "'/>"
 local spaces="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
@@ -30,13 +29,13 @@ local viewrpc = "var websocket=document.getElementById(\"use_websocket\");" ..
 "if(auth_port.value==\"\"){auth_port_value=\"6800\"}else{auth_port_value=auth_port.value};" ..
 "if(auth_method.value==\"token\"){" ..
 "var auth_token=document.getElementById(\"cbid.aria2.main.rpc_secret\");" ..
-"newTextNode.value=protocol+\"://token:\"+auth_token.value+\"@\"+\"" .. routerip .. ":\"+auth_port_value+\"/jsonrpc\";" ..
+"newTextNode.value=protocol+\"://token:\"+auth_token.value+\"@\"+document.domain+\":\"+auth_port_value+\"/jsonrpc\";" ..
 "}else if(auth_method.value==\"user_pass\"){" ..
 "var auth_user=document.getElementById(\"cbid.aria2.main.rpc_user\");" ..
 "var auth_passwd=document.getElementById(\"cbid.aria2.main.rpc_passwd\");" ..
-"newTextNode.value=protocol+\"://\"+auth_user.value+\":\"+auth_passwd.value+\"@\"+\"" .. routerip .. ":\"+auth_port_value+\"/jsonrpc\";" ..
+"newTextNode.value=protocol+\"://\"+auth_user.value+\":\"+auth_passwd.value+\"@\"+document.domain+\":\"+auth_port_value+\"/jsonrpc\";" ..
 "}else{" ..
-"newTextNode.value=protocol+\"://\"+\"" .. routerip .. ":\"+auth_port_value+\"/jsonrpc\";" ..
+"newTextNode.value=protocol+\"://\"+document.domain+\":\"+auth_port_value+\"/jsonrpc\";" ..
 "}"
 local sessionbtn = spaces .. "<input type=\"button\" value=\" " .. translate("View Json-RPC URL") .. " \" onclick='" .. viewrpc .. "'/>"
 local aria2rpctxt = spaces .. "<input id=\"aria2rpcpath\" onmouseover=\"obj=document.getElementById(this.id);obj.focus();obj.select()\"></input>"
