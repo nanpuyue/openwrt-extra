@@ -1,5 +1,5 @@
 
-config aria2
+config aria2 'main'
 	option enabled '0'
 	option file_allocation 'none'
 	option bt_enable_lpd 'true'
