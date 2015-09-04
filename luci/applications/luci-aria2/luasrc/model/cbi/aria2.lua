@@ -17,8 +17,14 @@ require("luci.model.ipkg")
 
 
 local uci = require "luci.model.uci".cursor()
-local cfgcmd = "var Token=document.getElementById(\"cbid.aria2.main.rpc_secret\");function randomString(len){len=len||32;var $chars=\"abcdefghijklmnopqrstuvwxyz1234567890\";var maxPos=$chars.length;var pwd=\"\";for(i = 0; i < len; i++){pwd+=$chars.charAt(Math.floor(Math.random() * maxPos));}return pwd;};Token.value=randomString(32)"
-local cfgbtn = "&nbsp;<input type=\"button\" value=\" " .. translate("Generate Randomly") .. " \" onclick='" .. cfgcmd .. "'/>"
+local cfgcmd = "var Token=document.getElementById('cbid.aria2.main.rpc_secret');" .. 
+"function randomString(len){" ..
+"len=len||32;var $chars='abcdefghijklmnopqrstuvwxyz1234567890';" .. 
+"var maxPos=$chars.length;var pwd='';" .. 
+"for(i = 0; i &lt; len; i++){pwd+=$chars.charAt(Math.floor(Math.random() * maxPos));}" ..
+"return pwd;};Token.value=randomString(32)"
+
+local cfgbtn = "&nbsp;<input type=\"button\" value=\" " .. translate("Generate Randomly") .. " \" onclick=\"" .. cfgcmd .. "\"/>"
 local spaces="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
 
 local viewrpc = "var websocket=document.getElementById(\"use_websocket\");" ..
@@ -193,7 +199,7 @@ rpc_passwd=rpc:option(Value, "rpc_passwd", translate("RPC password"))
 rpc_passwd:depends("rpc_auth_method", "user_pass")
 rpc_passwd.password = true
 
-rpc_secret=rpc:option(Value, "rpc_secret", translate("RPC Token"), "<br>" .. cfgbtn)
+rpc_secret=rpc:option(Value, "rpc_secret", translate("RPC Token"), "<br/>" .. cfgbtn)
 rpc_secret:depends("rpc_auth_method", "token")
 
 extra=m:section(TypedSection, "aria2", translate("Extra Settings"))
