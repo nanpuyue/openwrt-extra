@@ -1,3 +1,4 @@
+from https://github.com/hqvv/openwrt-udns
 diff --git a/configure b/configure
 index dda98b3..54be3c3 100755
 --- a/configure
