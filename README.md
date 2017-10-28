@@ -13,7 +13,7 @@ Add "src-git extra git://github.com/nanpuyue/openwrt-extra.git" to feeds.conf.de
 the list of packages:
 * dnscrypt-proxy
 * libsodium (depended by dnscrypt-proxy, but have no ipk)
-* luci-app-aira2
+* luci-app-aria2
 * shadowsocks-libev
 * webui-aria2
 * yaaw
